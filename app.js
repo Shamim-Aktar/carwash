@@ -25,7 +25,9 @@ app.use(expressValidator())
 
 //imports routes
 const authRoute=require('./routes/auth')
+const detailRoute=require('./routes/adddetails')
 app.use('/api/user', authRoute)
+app.use('/api/details', detailRoute)
 
 
 
