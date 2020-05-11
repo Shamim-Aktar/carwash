@@ -19,6 +19,10 @@ const addDetailsSchema=mongoose.Schema({
         max:255,
         min:6
     },
+    // carImage:{
+    //     type:String,
+        
+    // }
   
 
 },    
