@@ -2,6 +2,11 @@ const express=require('express')
 const User=require('../models/User')
 const bcrypt=require('bcryptjs')
 const jwt=require('jsonwebtoken')
+const verify=require('./verifytoken')
+const mongoose = require("mongoose");
+const _ = require('lodash');
+//const orderRoute=require('../routes/order')
+const Order=require('../models/Order')
 
 const {registerValidation, loginValidation}=require('../validation')
 
@@ -31,15 +36,23 @@ router.post('/register', async (req, res)=>{
      //hashing
      const salt=await bcrypt.genSalt(10)
      const hashedPassword=await bcrypt.hash(req.body.password, salt)
+     User.init()
+
     const user=new User({
+     
         name:req.body.name,
         email:req.body.email,
-        password:hashedPassword
-
+        password:hashedPassword,
+        //orders:'5ebdc6425bd52e31989b9b44'
+      
+      
+        
+       
     });
     try{
         const savedUser=await user.save();
         //res.send(savedUser)
+
         res.send({user:user._id})
     } catch(err){
         res.status(400).send(err)
@@ -59,13 +72,41 @@ router.post('/login',async  (req, res)=>{
     if(!validPass) return res.status(400).send('Invalid password')
 
     const token=jwt.sign({_id: user._id}, process.env.TOKEN_SECRET)
+    res.status(200).json({token:token})
 
-    res.header('auth-token', token).send(token)
+    //res.header('auth-token', token).send(token)
+    
 
     //res.send('I am login ')
 })
 
-router.get('/userprofile/:id', (req, res)=>{
+
+router.get('/userprofile', verify, (req, res)=>{
+
+
+
+    User.findOne({ _id: req.user._id },
+        (err, user) => {
+            console.log(user)
+            console.log(err)
+            if (!user)
+                return res.status(404).json({ status: false, message: 'User record not found.' });
+            else
+            //     return res.status(200).json({ status: true, user : _.pick(user,['name','email']) });
+            // return res.status(200).json({ status: true, user : _.pick(user,['name','email']) });
+            // return res.status(200).json({user});
+            return res.status(200).json({ status: true, user : _.pick(user,['name','email']) });
+       }
+    );
+    
+})
+    
+
+
+
+
+
+router.get('/userprofile/:id',verify, (req, res, next)=>{
     User.findById(req.params.id,(error, data)=>{
         if (error) {
             return next(error);

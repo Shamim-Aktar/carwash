@@ -1,6 +1,8 @@
 const mongoose=require('mongoose')
+const Order=require('./Order')
 
 const userSchema=mongoose.Schema({
+  
     name:{
         type:String,
         require:true,
@@ -22,7 +24,17 @@ const userSchema=mongoose.Schema({
     date:{
         type:Date,
         defaule:Date.now
-    }
+    },
+    // orders:{
+    //     required:true, 
+    //     type:mongoose.Schema.Types.ObjectId,
+    //     ref:'Order'
+    // }
+
+   
+    
 })
 
 module.exports=mongoose.model('User', userSchema)
+
+//shahid1@123
